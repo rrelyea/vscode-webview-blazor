@@ -3,7 +3,9 @@
 This is the README for a sample "blazor-webview" extension. It demonstrates a working VSCode
 extension that hosts a Blazor app in a webview.
 
-## Build custom VSCode to work around URL problem
+## Build custom VSCode to work around URL problem in retail VSCode
+
+- details on problem in retail VSCode: https://github.com/microsoft/vscode/issues/163225
 
 - clone https://github.com/rrelyea/vscode
 - install prereqs to dev vscode (see https://github.com/microsoft/vscode/wiki/How-to-Contribute)

@@ -120,7 +120,13 @@ export function deactivate() {}
 				</div>
 				<script nonce="${nonce}" src="_framework/blazor.webassembly.js" autostart="false"></script>
 				<script nonce="${nonce}">
+
+					// WARNING - WORKAROUND NOT GUARANTEED TO WORK IN FUTURE
+					// Without this line of script, Blazor 6.0 (and likely 7.0) will through an exception on launch of the blazorApp, and fail to load properly.
+					// The Blazor team is looking at this problem, and will likely address in a future version of Blazor.
+					// Issue tracking this problem: https://github.com/dotnet/aspnetcore/issues/26790
 					Blazor._internal.navigationManager.getLocationHref = () => document.baseURI;
+					
 					Blazor.start();
 				</script>
 			</body>

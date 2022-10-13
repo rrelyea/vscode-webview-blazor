@@ -3,6 +3,8 @@
 This is the README for a sample "blazor-webview" extension. It demonstrates a working VSCode
 extension that hosts a Blazor app in a webview.
 
+This sample started with a similar structure and approach as the blazor-webview-react sample by rebornix: https://github.com/rebornix/vscode-webview-react
+
 ## Build custom VSCode to work around URL problem in retail VSCode
 
 - details on problem in retail VSCode: https://github.com/microsoft/vscode/issues/163225

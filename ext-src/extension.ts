@@ -22,6 +22,7 @@ export function deactivate() {}
 	public static currentPanel: BlazorPanel | undefined;
 
 	private static readonly viewType = 'blazor';
+	private static readonly appName = 'blazorApp';
 
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
@@ -49,7 +50,7 @@ export function deactivate() {}
 
 			// And restric the webview to only loading content from our extension's `media` directory.
 			localResourceRoots: [
-				vscode.Uri.file(path.join(this._extensionPath, 'blazorApp'))
+				vscode.Uri.file(path.join(this._extensionPath, BlazorPanel.appName))
 			]
 		});
 		
@@ -90,10 +91,14 @@ export function deactivate() {}
 		}
 	}
 
+	private buildWebViewUrl(path: string) {
+		return 'https://file.no-authority.vscode-resource.vscode-cdn.net' + vscode.Uri.file(path).toString().substring(7);
+	}
+
 	private _getHtmlForBlazorWebview() {
-		const basePath = path.join(this._extensionPath, 'blazorApp', 'bin', 'debug', 'net6.0', 'publish', 'wwwroot') + "\\";
-		const baseUrl = 'https://file.no-authority.vscode-resource.vscode-cdn.net' + vscode.Uri.file(basePath).toString().substring(7);
-		
+		const basePath = path.join(this._extensionPath, BlazorPanel.appName, 'bin', 'debug', 'net6.0', 'publish', 'wwwroot') + "\\";
+		const baseUrl = this.buildWebViewUrl(basePath);
+
 		// Use a nonce to whitelist which scripts can be run
 		const nonce = getNonce();
 		
@@ -108,7 +113,7 @@ export function deactivate() {}
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https:; img-src vscode-resource: https: data:; script-src 'unsafe-inline' 'unsafe-eval' https:; style-src vscode-resource: 'unsafe-inline' http: https: data:; font-src https:">
 				<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 				<link href="css/app.css" rel="stylesheet" />
-				<link href="blazorApp.styles.css" rel="stylesheet" />
+				<link href="${BlazorPanel.appName+'.styles.css'}" rel="stylesheet" />
 			</head>
 			
 			<body>

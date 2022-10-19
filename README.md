@@ -10,6 +10,7 @@ This sample started with a similar structure and approach as the blazor-webview-
 - details on problem in retail VSCode: https://github.com/microsoft/vscode/issues/163225
 
 - clone https://github.com/rrelyea/vscode
+- git checkout dev-rrelyea-schemeAuthorityDelimiter
 - install prereqs to dev vscode (see https://github.com/microsoft/vscode/wiki/How-to-Contribute)
 - build VSCode (yarn. yarn watch.)
 

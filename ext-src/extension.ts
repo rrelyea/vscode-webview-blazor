@@ -96,7 +96,7 @@ export function deactivate() {}
 	}
 
 	private _getHtmlForBlazorWebview() {
-		const basePath = path.join(this._extensionPath, BlazorPanel.appName, 'bin', 'debug', 'net6.0', 'publish', 'wwwroot') + "\\";
+		const basePath = path.join(this._extensionPath, BlazorPanel.appName, 'bin', 'debug', 'net7.0', 'publish', 'wwwroot') + "\\";
 		const baseUrl = this.buildWebViewUrl(basePath);
 
 		// Use a nonce to whitelist which scripts can be run
@@ -109,11 +109,11 @@ export function deactivate() {}
 				<meta charset="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 				<title>blazorApp</title>
-				<base href="${baseUrl}">
+				<base href="/">
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https:; img-src vscode-resource: https: data:; script-src 'unsafe-inline' 'unsafe-eval' https:; style-src vscode-resource: 'unsafe-inline' http: https: data:; font-src https:">
-				<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-				<link href="css/app.css" rel="stylesheet" />
-				<link href="${BlazorPanel.appName+'.styles.css'}" rel="stylesheet" />
+				<link href="${baseUrl}css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+				<link href="${baseUrl}css/app.css" rel="stylesheet" />
+				<link href="${baseUrl}${BlazorPanel.appName}.styles.css" rel="stylesheet" />
 			</head>
 			
 			<body>
@@ -123,16 +123,12 @@ export function deactivate() {}
 					<a href="" class="reload">Reload</a>
 					<a class="dismiss">🗙</a>
 				</div>
-				<script nonce="${nonce}" src="_framework/blazor.webassembly.js" autostart="false"></script>
-				<script nonce="${nonce}">
-
-					// WARNING - WORKAROUND NOT GUARANTEED TO WORK IN FUTURE
-					// Without this line of script, Blazor 6.0 (and likely 7.0) will through an exception on launch of the blazorApp, and fail to load properly.
-					// The Blazor team is looking at this problem, and will likely address in a future version of Blazor.
-					// Issue tracking this problem: https://github.com/dotnet/aspnetcore/issues/26790
-					Blazor._internal.navigationManager.getLocationHref = () => document.baseURI;
-					
-					Blazor.start();
+				<script nonce="${nonce}" src="${baseUrl}_framework/blazor.webassembly.js" autostart="false"></script>
+				<script>
+					window.getLocalResourceRoot = () => '${baseUrl}';
+					Blazor.start({
+						loadBootResource: (type, name, defaultUri, integrity) => \`${baseUrl}_framework/\${name}\`,
+					});
 				</script>
 			</body>
 			

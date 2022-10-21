@@ -73,7 +73,7 @@ internal sealed class VsCodeHelper : IDisposable
         _isInitialized = true;
     }
 
-    public string AsWebViewUri(string relativeUri)
+    public string AsWebViewResourceFileUri(string relativeUri)
     {
         AssertInitialized();
         return Path.Combine(_localResourceRoot, relativeUri);

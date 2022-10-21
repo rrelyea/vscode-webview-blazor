@@ -1,6 +1,5 @@
 ﻿@page "/fetchdata"
 @inject HttpClient Http
-@inject VsCodeHelper VsCode
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -42,8 +41,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var requestUri = VsCode.AsWebViewUri("sample-data/weather.json");
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>(requestUri);
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
     }
 
     public class WeatherForecast

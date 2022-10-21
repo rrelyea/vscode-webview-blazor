@@ -54,7 +54,11 @@ internal sealed class VsCodeHelper : IDisposable
 
         // VSCode navigates to /index.html by default, which will match the "not found" route
         // after Blazor starts up. So, we navigate to the home page immediately.
-        _navigationManager.NavigateTo($"/?{_requiredQueryParameters}");
+        // We replace the history entry so you can't navigate back to the "not found" state.
+        _navigationManager.NavigateTo($"/?{_requiredQueryParameters}", new NavigationOptions
+        {
+            ReplaceHistoryEntry = true,
+        });
 
         // VSCode reads query parameters from the URI to determine how to load resources. Since
         // navigations would remove that query string, we intercept all navigation attempts,
@@ -97,10 +101,9 @@ internal sealed class VsCodeHelper : IDisposable
                 Query = queryParameters.ToString()
             };
 
-            _navigationManager.NavigateTo(uriBuilder.Uri.ToString(), new NavigationOptions()
+            _navigationManager.NavigateTo(uriBuilder.Uri.ToString(), new NavigationOptions
             {
                 HistoryEntryState = context.HistoryEntryState,
-                ReplaceHistoryEntry = true,
             });
         }
 

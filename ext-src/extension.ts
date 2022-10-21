@@ -105,17 +105,8 @@ export function deactivate() {}
 		// Handle messages from the webview
 		this._panel.webview.onDidReceiveMessage(message => {
 			switch (message.command) {
-				case 'alert':
-					vscode.window.showErrorMessage(message.text);
-					return;
 			}
 		}, null, this._disposables);
-	}
-
-	public doRefactor() {
-		// Send a message to the webview webview.
-		// You can send any JSON serializable data.
-		this._panel.webview.postMessage({ command: 'refactor' });
 	}
 
 	public dispose() {
@@ -167,7 +158,7 @@ export function deactivate() {}
 			<body>
 			<div id="app">Loading...</div>
 				<div id="blazor-error-ui">
-					An unhandled error has occurred.
+					An unhandled error has occurred. Please view <a href='https://github.com/rrelyea/vscode-webview-blazor/blob/main/README.md'>Readme</a>. (Most likely you need to launch from a custom build of VSCode, not Retail VSCode)
 					<a href="" class="reload">Reload</a>
 					<a class="dismiss">🗙</a>
 				</div>
@@ -198,7 +189,7 @@ export function deactivate() {}
 			</head>
 			
 			<body>
-				<iframe src='http://localhost:5000/' width="100%" height="800px"/>
+				<iframe src='http://localhost:5000/' style="position: absolute; width: 100%; height: 100%; border: none"/>
 			</body>
 			
 			</html>`;

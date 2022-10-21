@@ -10,14 +10,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:blazor-webview.start"
+    "onCommand:blazor-webview.startWasm",
+    "onCommand:blazor-webview.startServer"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "blazor-webview.start",
-        "title": "Start Blazor Webview"
+        "command": "blazor-webview.startWasm",
+        "title": "Start Blazor Webview (using wasm)"
+      },
+      {
+        "command": "blazor-webview.startServer",
+        "title": "Start Blazor Webview (using server)"
       }
     ]
   },

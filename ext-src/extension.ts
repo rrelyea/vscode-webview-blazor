@@ -159,9 +159,9 @@ export function deactivate() {}
 				<title>blazorApp</title>
 				<base href="/">
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src https:; img-src vscode-resource: https: data:; script-src 'unsafe-inline' 'unsafe-eval' https:; style-src vscode-resource: 'unsafe-inline' http: https: data:; font-src https:">
-				<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-				<link href="css/app.css" rel="stylesheet" />
-				<link href="${BlazorPanel.wasmAppName+'.styles.css'}" rel="stylesheet" />
+				<link href="${baseUrl + 'css/bootstrap/bootstrap.min.css'}" rel="stylesheet" />
+				<link href="${baseUrl + 'css/app.css" rel="stylesheet'}" />
+				<link href="${baseUrl + BlazorPanel.wasmAppName + '.styles.css'}" rel="stylesheet" />
 			</head>
 			
 			<body>

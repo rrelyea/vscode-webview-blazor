@@ -4,11 +4,11 @@ import * as child from 'child_process';
 
 export function activate(context: vscode.ExtensionContext) {
 	let disposableWasm = vscode.commands.registerCommand('blazor-webview.startWasm', () => {
-		BlazorPanel.createOrShow(context.extensionPath, "wasm");
+		BlazorPanel.createOrShow(context.extensionPath, BlazorType.Wasm);
 	});
 
 	let disposableServer = vscode.commands.registerCommand('blazor-webview.startServer', () => {
-		BlazorPanel.createOrShow(context.extensionPath, "server");
+		BlazorPanel.createOrShow(context.extensionPath, BlazorType.Server);
 	});
 
 	context.subscriptions.push(disposableWasm);
@@ -17,6 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
+enum BlazorType {
+	Wasm,
+	Server,
+}
 
 /**
  * Manages blazor webview panels
@@ -34,26 +38,24 @@ export function deactivate() {}
 
 	private readonly _panel: vscode.WebviewPanel;
 	private readonly _extensionPath: string;
-	private readonly _blazorType: string;
+	private readonly _blazorType: BlazorType;
 	private _disposables: vscode.Disposable[] = [];
     private _res: child.ChildProcess | undefined;
 
-	public static createOrShow(extensionPath: string, blazorType: string) {
+	public static createOrShow(extensionPath: string, blazorType: BlazorType) {
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
 
 		switch (blazorType) {
-			case "wasm":
-				// If we already have a panel, show it.
-				// Otherwise, create a new panel.
+			case BlazorType.Wasm:
+				// If we already have a panel, show it. Otherwise, create a new panel.
 				if (BlazorPanel.wasmPanel) {
 					BlazorPanel.wasmPanel._panel.reveal(column);
 				} else {
 					BlazorPanel.wasmPanel = new BlazorPanel(extensionPath, column || vscode.ViewColumn.One, blazorType);
 				}
 				break;
-			case "server":
-				// If we already have a panel, show it.
-				// Otherwise, create a new panel.
+			case BlazorType.Server:
+				// If we already have a panel, show it. Otherwise, create a new panel.
 				if (BlazorPanel.serverPanel) {
 					BlazorPanel.serverPanel._panel.reveal(column);
 				} else {
@@ -63,27 +65,25 @@ export function deactivate() {}
 		}
 	}
 
-	private constructor(extensionPath: string, column: vscode.ViewColumn, blazorType: string) {
+	private constructor(extensionPath: string, column: vscode.ViewColumn, blazorType: BlazorType) {
 		this._extensionPath = extensionPath;
 		this._blazorType = blazorType;
-
-		// Create and show a new webview panel
-		this._panel = vscode.window.createWebviewPanel(BlazorPanel.viewType, "Blazor (" + this._blazorType + ")", column, {
-			// Enable javascript in the webview
-			enableScripts: true,
-
-			// And restric the webview to only loading content from our extension's `media` directory.
-			localResourceRoots: [
-				vscode.Uri.file(path.join(this._extensionPath, BlazorPanel.wasmAppName))
-			]
-		});
 		
 		switch (this._blazorType) {
-			case "wasm":
+			case BlazorType.Wasm:
+				this._panel = vscode.window.createWebviewPanel(BlazorPanel.viewType, "Blazor (wasm)", column, {
+					// Enable javascript in the webview
+					enableScripts: true,
+
+					// And restric the webview to only loading content from our extension's `media` directory.
+					localResourceRoots: [
+						vscode.Uri.file(path.join(this._extensionPath, BlazorPanel.wasmAppName))
+					]
+				});
 				this._panel.webview.html = this._getHtmlForBlazorWasmWebview();
 				break;
-			case "server":
-				const projectBasePath = path.join(this._extensionPath, BlazorPanel.serverAppName) ;
+			case BlazorType.Server:
+				this._panel = vscode.window.createWebviewPanel(BlazorPanel.viewType, "Blazor (server)", column);
 				const exeBasePath = path.join(this._extensionPath, BlazorPanel.serverAppName, 'bin', 'debug', 'net7.0', 'publish') ;
 				const exePath = path.join(exeBasePath, BlazorPanel.serverAppName + '.exe');
 
@@ -92,10 +92,10 @@ export function deactivate() {}
 						cwd: exeBasePath
 				  	});
 
-				console.log(this._res);
-
 				this._panel.webview.html = this._getHtmlForBlazorServerWebview();
 				break;
+			default:
+				throw new Error("BlazorType not handled"); 
 		}
 
 		// Listen for when the panel is disposed
@@ -111,12 +111,14 @@ export function deactivate() {}
 
 	public dispose() {
 		switch (this._blazorType) {
-			case "wasm":
+			case BlazorType.Wasm:
 				BlazorPanel.wasmPanel = undefined;
 				break;
-			case "server":
+			case BlazorType.Server:
 				BlazorPanel.serverPanel = undefined;
 				break;
+			default:
+				throw new Error("BlazorType not handled"); 
 		}
 
 		// Clean up our resources

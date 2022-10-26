@@ -15,13 +15,13 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposableServer);
 }
 
-export function deactivate() {}
+export function deactivate() { }
 
 
 /**
  * Manages blazor webview panels
  */
- class BlazorPanel {
+class BlazorPanel {
 	/**
 	 * Track the currently panel. Only allow a single panel to exist at a time.
 	 */
@@ -36,7 +36,7 @@ export function deactivate() {}
 	private readonly _extensionPath: string;
 	private readonly _blazorType: string;
 	private _disposables: vscode.Disposable[] = [];
-    private _res: child.ChildProcess | undefined;
+	private _res: child.ChildProcess | undefined;
 
 	public static createOrShow(extensionPath: string, blazorType: string) {
 		const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
@@ -58,7 +58,7 @@ export function deactivate() {}
 					BlazorPanel.serverPanel._panel.reveal(column);
 				} else {
 					BlazorPanel.serverPanel = new BlazorPanel(extensionPath, column || vscode.ViewColumn.One, blazorType);
-				}		
+				}
 				break;
 		}
 	}
@@ -77,20 +77,39 @@ export function deactivate() {}
 				vscode.Uri.file(path.join(this._extensionPath, BlazorPanel.wasmAppName))
 			]
 		});
-		
+
 		switch (this._blazorType) {
 			case "wasm":
 				this._panel.webview.html = this._getHtmlForBlazorWasmWebview();
 				break;
 			case "server":
-				const projectBasePath = path.join(this._extensionPath, BlazorPanel.serverAppName) ;
-				const exeBasePath = path.join(this._extensionPath, BlazorPanel.serverAppName, 'bin', 'debug', 'net7.0', 'publish') ;
-				const exePath = path.join(exeBasePath, BlazorPanel.serverAppName + '.exe');
+				// TODO: Figure out how to detect this based on the environment?
+				let devMode = true;
 
-				this._res = child.execFile(exePath , 
+				var executablePath, executionFolder;
+				var extraEnv;
+
+				if (devMode) {
+					// In dev mode we run the app from its source code location and also setting the environment
+					// to 'development' so that static web assets are loaded from the correct location.
+					executionFolder = path.join(this._extensionPath, BlazorPanel.serverAppName);
+					executablePath = path.join(this._extensionPath, BlazorPanel.serverAppName, 'bin', 'debug', 'net7.0', BlazorPanel.serverAppName + '.exe');
+					extraEnv = {
+						'ASPNETCORE_ENVIRONMENT': 'Development'
+					};
+				}
+				else {
+					// In non-dev mode we run the app from its published location (the output of
+					// running 'dotnet publish') as-is.
+					executionFolder = path.join(this._extensionPath, BlazorPanel.serverAppName, 'bin', 'debug', 'net7.0', 'publish');
+					executablePath = path.join(executionFolder, BlazorPanel.serverAppName + '.exe');
+				}
+
+				this._res = child.execFile(executablePath,
 					{
-						cwd: exeBasePath
-				  	});
+						cwd: executionFolder,
+						env: extraEnv
+					});
 
 				console.log(this._res);
 
@@ -149,7 +168,7 @@ export function deactivate() {}
 
 		// Use a nonce to whitelist which scripts can be run
 		const nonce = getNonce();
-		
+
 		return `<!DOCTYPE html>
 			<html lang="en">
 			
@@ -189,7 +208,7 @@ export function deactivate() {}
 
 		// Use a nonce to whitelist which scripts can be run
 		const nonce = getNonce();
-		
+
 		return `<!DOCTYPE html>
 			<html lang="en">
 			
